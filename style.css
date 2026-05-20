@@ -385,7 +385,7 @@ body.annotations-off .avatar-bubble   { opacity: 0; pointer-events: none; }
 .card-expert .comment-author { color: var(--expert-accent); }
 .card-friend .comment-author { color: var(--accent); }
 
-.comment-text  { font-family: var(--font-ui); font-size: .77rem; line-height: 1.52; color: var(--text); margin: 0; }
+.comment-text  { font-family: var(--font-ui); font-size: .77rem; line-height: 1.52; color: var(--text); margin: 0; white-space: pre-wrap; word-break: break-word; }
 .comment-cite  { display: block; font-family: var(--font-ui); font-size: .63rem; color: var(--text-muted); margin-top: 3px; font-style: italic; }
 
 /* Respostas */
