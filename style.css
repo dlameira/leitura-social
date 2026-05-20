@@ -433,11 +433,25 @@ body.annotations-off .avatar-bubble   { opacity: 0; pointer-events: none; }
 .reply-btn {
   background: none; border: none; cursor: pointer;
   font-family: var(--font-ui); font-size: .65rem;
-  color: var(--text-muted); padding: 3px 0 0; display: block;
+  color: var(--text-muted); padding: 3px 0 0; display: inline-block;
   transition: color .15s; text-align: left;
   opacity: 0;
 }
 .comment:hover .reply-btn, .reply-btn:focus { opacity: 1; }
+
+.own-actions {
+  display: inline-flex; gap: 10px; margin-left: 8px;
+  opacity: 0; transition: opacity .15s;
+}
+.comment:hover .own-actions { opacity: 1; }
+.own-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-ui); font-size: .63rem;
+  color: var(--text-muted); padding: 0;
+  transition: color .15s;
+}
+.own-btn:hover { color: var(--accent); }
+.delete-btn:hover { color: #b03020; }
 
 .card-add-area {
   margin-top: 10px; padding-top: 9px;

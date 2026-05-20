@@ -132,6 +132,32 @@ async function fetchAllComments() {
   } catch (e) { console.warn('Erro ao carregar comentários:', e); }
 }
 
+async function deleteComment(id, highlightId, spanEl) {
+  await fetch(`${DIRECTUS_URL}/items/leitura_comments/${id}`, { method: 'DELETE' });
+  if (commentsCache[highlightId]) {
+    commentsCache[highlightId] = commentsCache[highlightId].filter(c => c.id !== id && c.parent_id !== id);
+  }
+  if (!commentsCache[highlightId] || !commentsCache[highlightId].length) {
+    document.querySelector(`.avatar-bubble[data-for="${highlightId}"][data-side="friend"]`)?.remove();
+    cardFriend.classList.remove('visible');
+    return;
+  }
+  rebuildFriendCard(highlightId, spanEl);
+}
+
+async function updateComment(id, newText, highlightId, spanEl) {
+  await fetch(`${DIRECTUS_URL}/items/leitura_comments/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: newText }),
+  });
+  if (commentsCache[highlightId]) {
+    const c = commentsCache[highlightId].find(c => c.id === id);
+    if (c) c.text = newText;
+  }
+  rebuildFriendCard(highlightId, spanEl);
+}
+
 async function postComment(highlightId, text, parentId = null) {
   const p = getUserProfile();
   const r = await fetch(`${DIRECTUS_URL}/items/leitura_comments`, {
@@ -202,6 +228,7 @@ function renderFriendCard(highlightId) {
     byParent[r.parent_id].push(r);
   });
 
+  const profile = getUserProfile();
   const commentsHTML = topLevel.map(c => {
     const replies     = byParent[c.id] || [];
     const repliesHTML = replies.map(r =>
@@ -210,13 +237,27 @@ function renderFriendCard(highlightId) {
         <div class="reply-content"><span class="reply-author">${r.author}</span> ${r.text}</div>
       </div>`
     ).join('');
+    const isOwn = !isLocal && c.author === profile.author && c.initials === profile.initials;
+    const ownHTML = isOwn ? `
+      <div class="own-actions">
+        <button class="own-btn edit-btn" data-id="${c.id}">✎ editar</button>
+        <button class="own-btn delete-btn" data-id="${c.id}">✕ apagar</button>
+      </div>
+      <div class="inline-form edit-form" id="ef-${c.id}" style="display:none">
+        <textarea class="inline-textarea" rows="3">${c.text}</textarea>
+        <div class="form-row">
+          <button class="form-cancel" data-target="ef-${c.id}">cancelar</button>
+          <button class="form-send edit-save" data-id="${c.id}">salvar</button>
+        </div>
+      </div>` : '';
     return `<div class="comment">
       <div class="comment-avatar" data-color="${c.color}">${c.initials}</div>
       <div class="comment-body">
         <span class="comment-author">${c.author}</span>
-        <p class="comment-text">${c.text}</p>
+        <p class="comment-text" id="ct-${c.id}">${c.text}</p>
         ${repliesHTML ? `<div class="replies">${repliesHTML}</div>` : ''}
         <button class="reply-btn" data-id="${c.id}">↩ responder</button>
+        ${ownHTML}
         <div class="inline-form" id="rf-${c.id}" style="display:none">
           <textarea class="inline-textarea" placeholder="sua resposta..." rows="2"></textarea>
           <div class="form-row">
@@ -351,6 +392,42 @@ function attachFriendCardEvents(highlightId, spanEl) {
       } catch(err) { console.warn(err); addSend.disabled = false; }
     });
   }
+
+  // Editar comentário próprio
+  cardFriend.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const form = cardFriend.querySelector(`#ef-${btn.dataset.id}`);
+      if (!form) return;
+      const opening = form.style.display === 'none';
+      cardFriend.querySelectorAll('.edit-form').forEach(f => { f.style.display = 'none'; });
+      if (opening) { form.style.display = 'block'; form.querySelector('textarea').focus(); cardLocked = true; }
+    });
+  });
+
+  cardFriend.querySelectorAll('.edit-save').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const ta      = btn.closest('.inline-form').querySelector('textarea');
+      const newText = ta.value.trim();
+      if (!newText) return;
+      btn.disabled = true;
+      try {
+        await updateComment(parseInt(btn.dataset.id), newText, highlightId, spanEl);
+      } catch(err) { console.warn(err); btn.disabled = false; }
+    });
+  });
+
+  // Apagar comentário próprio
+  cardFriend.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      btn.disabled = true;
+      try {
+        await deleteComment(parseInt(btn.dataset.id), highlightId, spanEl);
+      } catch(err) { console.warn(err); btn.disabled = false; }
+    });
+  });
 
   cardFriend.querySelectorAll('.inline-textarea').forEach(ta => {
     ta.addEventListener('focus', () => { cardLocked = true; clearTimeout(hideTimer); });
