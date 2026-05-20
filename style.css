@@ -478,6 +478,60 @@ body.annotations-off .avatar-bubble   { opacity: 0; pointer-events: none; }
 }
 .form-send:hover { opacity: .82; }
 
+/* ─── Onboarding ─────────────────────────────────────────────────────────────── */
+.ob-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.52); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .25s;
+}
+.ob-overlay.hidden { display: none; }
+
+.ob-card {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 20px; padding: 32px 28px; box-shadow: var(--card-shadow);
+  width: 340px; max-width: calc(100vw - 32px);
+  display: flex; flex-direction: column; gap: 18px;
+}
+.ob-title {
+  font-family: var(--font-body); font-size: 1.45rem; font-weight: 500;
+  color: var(--text); line-height: 1.2;
+}
+.ob-desc {
+  font-family: var(--font-ui); font-size: .8rem;
+  color: var(--text-muted); line-height: 1.5; margin-top: -8px;
+}
+.ob-row    { display: flex; gap: 12px; align-items: center; }
+.ob-avatar {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  background: #3d6a8a; color: #fff;
+  font-family: var(--font-ui); font-size: .8rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.ob-fields { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+.ob-input {
+  background: var(--bg); border: 1px solid var(--divider);
+  border-radius: 7px; padding: 7px 10px;
+  font-family: var(--font-ui); font-size: .82rem; color: var(--text);
+  outline: none; transition: border-color .15s; width: 100%;
+}
+.ob-input:focus { border-color: var(--accent); }
+.ob-colors { display: flex; gap: 9px; }
+.ob-color  {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 2.5px solid transparent; cursor: pointer;
+  transition: border-color .15s, transform .15s;
+}
+.ob-color:hover, .ob-color.active { border-color: var(--text); transform: scale(1.15); }
+.ob-btn {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 9px; padding: 11px 16px; cursor: pointer;
+  font-family: var(--font-ui); font-size: .85rem; font-weight: 600;
+  transition: opacity .15s; margin-top: 2px;
+}
+.ob-btn:hover { opacity: .87; }
+
 /* ─── Responsivo ─────────────────────────────────────────────────────────────── */
 @media (max-width: 1080px) {
   :root { --margin-w: 160px; }

@@ -218,6 +218,29 @@
     </div>
   </div>
 
+  <!-- ── Onboarding ─────────────────────────────────────────────────────── -->
+  <div id="onboardingOverlay" class="ob-overlay">
+    <div class="ob-card">
+      <h2 class="ob-title">Olá, leitor</h2>
+      <p class="ob-desc">Como você quer aparecer para os outros leitores?</p>
+      <div class="ob-row">
+        <div class="ob-avatar" id="obPreview">?</div>
+        <div class="ob-fields">
+          <input class="ob-input" id="obName"    placeholder="Seu nome"          maxlength="30" autocomplete="off" />
+          <input class="ob-input" id="obInitials" placeholder="Iniciais (ex: AB)" maxlength="2"  autocomplete="off" />
+        </div>
+      </div>
+      <div class="ob-colors">
+        <button class="ob-color" data-color="1" style="background:#8b4513"></button>
+        <button class="ob-color" data-color="2" style="background:#4a7a54"></button>
+        <button class="ob-color active" data-color="3" style="background:#3d6a8a"></button>
+        <button class="ob-color" data-color="4" style="background:#7a4f8a"></button>
+        <button class="ob-color" data-color="5" style="background:#2a7a6a"></button>
+      </div>
+      <button class="ob-btn" id="obSave">Entrar na leitura →</button>
+    </div>
+  </div>
+
   <script src="reader.js"></script>
 </body>
 </html>
